@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>music player</title>
+    <style>
+      :root { color-scheme: light dark; font: 16px/1.6 system-ui, sans-serif; background: #10131b; color: #eef0f6; }
+      body { margin: 0; padding: 3rem 1.25rem; }
+      main { max-width: 54rem; margin: 0 auto; }
+      h1, h2 { line-height: 1.2; }
+      h1 { font-size: clamp(2rem, 6vw, 3.5rem); margin-bottom: .5rem; }
+      h2 { margin-top: 2.5rem; }
+      .eyebrow, .inferred { color: #aeb8d0; }
+      .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; }
+      .notice { padding: 1rem; border-left: 3px solid #8da7ff; background: #ffffff0d; }
+      .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: .75rem; }
+      .options > div { padding: .9rem 1rem; border: 1px solid #ffffff24; border-radius: .6rem; }
+      dt { font-weight: 700; }
+      dd { margin: .25rem 0 0; overflow-wrap: anywhere; }
+      .actions { padding-left: 1.25rem; }
+      .actions li { padding: .35rem 0; }
+      .prompt-box { margin-top: 1rem; }
+      textarea { box-sizing: border-box; width: 100%; min-height: 24rem; resize: vertical; padding: 1rem; border: 1px solid #ffffff30; border-radius: .6rem; background: #090b10; color: inherit; font: .9rem/1.55 ui-monospace, monospace; }
+      button { margin: 0 0 .75rem; padding: .65rem 1rem; border: 0; border-radius: .45rem; background: #c6d2ff; color: #12182a; font: inherit; font-weight: 700; cursor: pointer; }
+      button:focus-visible, textarea:focus-visible { outline: 3px solid #8da7ff; outline-offset: 3px; }
+      #copy-status { min-height: 1.5em; }
+      @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">PromptScript · HTML build brief</p>
+      <h1>music player</h1>
+      <p class="notice">This page turns your <code>.ps</code> file into a structured prompt. Copy it into an AI coding assistant to generate the HTML application. PromptScript does not contact an AI service.</p>
+      <p>A simple music player for a personal music library.</p>
+      <p>Suggest any other useful options for a personal music player.</p>
+      <p>Keep playback controls accessible and show the current track.</p>
+    <section aria-labelledby="options-heading">
+      <h2 id="options-heading">Options</h2>
+      <dl class="options">
+        <div><dt>Autoplay</dt><dd>false</dd></div>
+        <div><dt>Initial Volume</dt><dd>0.8</dd></div>
+        <div><dt>Repeat</dt><dd>none</dd></div>
+        <div><dt>Shuffle</dt><dd>false</dd></div>
+        <div><dt>Supported Formats</dt><dd>[mp3, aac, wav]</dd></div>
+      </dl>
+    </section>
+    <section aria-labelledby="actions-heading">
+      <h2 id="actions-heading">Actions</h2>
+      <ul class="actions">
+        <li><strong>Play</strong> — Start or resume the selected track.</li>
+        <li><strong>Pause</strong> — Pause playback without losing the current position.</li>
+        <li><strong>Next Track</strong> — Move to the next track in the current queue.</li>
+        <li><strong>Previous Track</strong> — Move to the previous track in the current queue.</li>
+        <li><strong>Seek</strong> — Move playback to a requested position in the current track.</li>
+        <li><strong>Set Volume</strong> — Set the playback volume between zero and one.</li>
+        <li><strong>Toggle Shuffle</strong> <span class="inferred">(behavior to be inferred)</span></li>
+      </ul>
+    </section>
+      <section aria-labelledby="prompt-heading">
+        <h2 id="prompt-heading">AI build prompt</h2>
+        <p>Explicit requirements are included as written. Unspecified details are left for the AI to infer.</p>
+        <div class="prompt-box">
+          <button id="copy-prompt" type="button">Copy prompt</button>
+          <p id="copy-status" role="status" aria-live="polite">You can also select and copy the prompt below.</p>
+          <textarea id="ai-prompt" aria-label="AI build prompt" readonly spellcheck="false">You are an experienced front-end developer.
+Build a complete, polished, accessible, responsive HTML application for &quot;music player&quot;.
+Return a single, complete HTML document with CSS and JavaScript included in the document.
+Do not use external libraries, services, or build tools.
+Treat the following specification as the source of truth. Implement every stated requirement.
+Where details are unspecified, infer sensible, user-friendly behavior and make the result feel complete.
+
+Feature: music player
+Target: standalone HTML, CSS, and browser JavaScript
+
+Project context:
+- A simple music player for a personal music library.
+- Suggest any other useful options for a personal music player.
+- Keep playback controls accessible and show the current track.
+
+Specified options (preserve these values and use them to guide the implementation):
+- autoplay: false
+- initialVolume: 0.8
+- repeat: &quot;none&quot;
+- shuffle: false
+- supportedFormats: [&quot;mp3&quot;, &quot;aac&quot;, &quot;wav&quot;]
+
+Requested actions:
+- play
+  - Start or resume the selected track.
+- pause
+  - Pause playback without losing the current position.
+- nextTrack
+  - Move to the next track in the current queue.
+- previousTrack
+  - Move to the previous track in the current queue.
+- seek
+  - Move playback to a requested position in the current track.
+- setVolume
+  - Set the playback volume between zero and one.
+- toggleShuffle
+  - No behavior was specified; infer and implement a useful behavior.
+
+Make reasonable design and interaction decisions for anything not specified above.
+The result should work when saved as an .html file and opened in a modern browser.</textarea>
+        </div>
+      </section>
+    </main>
+    <script>
+      const copyButton = document.getElementById("copy-prompt");
+      const promptField = document.getElementById("ai-prompt");
+      const copyStatus = document.getElementById("copy-status");
+      copyButton?.addEventListener("click", async () => {
+        if (!promptField || !copyStatus) return;
+        try {
+          await navigator.clipboard.writeText(promptField.value);
+          copyStatus.textContent = "Prompt copied. Paste it into your AI coding assistant.";
+        } catch {
+          promptField.focus();
+          promptField.select();
+          copyStatus.textContent = "Automatic copy is unavailable here. The prompt is selected; copy it manually.";
+        }
+      });
+    </script>
+  </body>
+</html>

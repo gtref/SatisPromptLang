@@ -1,0 +1,30 @@
+{
+  "name": "satispromptlang",
+  "version": "0.0.0",
+  "description": "A prompt-oriented language that compiles .ps files into AI-ready HTML build briefs",
+  "keywords": [
+    "psudo",
+    "ai",
+    "prompt_gen",
+    "compiler",
+    "language"
+  ],
+  "license": "MIT",
+  "author": "gtref",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "npm run build && node dist/index.js",
+    "test": "npm run build && node --test dist/tests/parser.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "type-tune": "^1.0.2",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "chalk": "^6.0.1",
+    "commander": "^15.1.0"
+  }
+}
