@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "projectPath": "tsconfig.json",
+  "createdAt": "2026-11-18T04:43:13.8384261Z",
+  "options": {
+    "projectPath": "tsconfig.json",
+    "minReferrers": 2,
+    "placementStyle": "collocation",
+    "includeKinds": [
+      "typeAlias",
+      "interface"
+    ],
+    "ignoreEntries": [],
+    "defaultStatus": "ignore",
+    "includeExistingTypes": false,
+    "includeGenerated": false
+  },
+  "entries": [
+    {
+      "candidate": {
+        "id": "1f916ad49360",
+        "declarationKey": "46776e4ff7d44ffa2e78cc5185fdb053f1a5663fe63e0474bb148edc38abcaa5",
+        "stableKey": "core/nodes.ts#OptionValueNode#typeAlias",
+        "declarationStableKey": "core/nodes.ts#typeAlias#OptionValueNode#846",
+        "symbolName": "OptionValueNode",
+        "kind": "typeAlias",
+        "sourcePath": "core/nodes.ts",
+        "destinationPath": "core/types/core.ts",
+        "referrerPaths": [
+          "core/html-generator.ts",
+          "core/parser.ts",
+          "core/prompt-builder.ts"
+        ],
+        "referrerCount": 3,
+        "localDependencyNames": [
+          "LiteralNode",
+          "ArrayLiteralNode"
+        ],
+        "localDependencyDeclarationKeys": [
+          "326e214a8e6d4b1cb2436b1a4aa03e0615dddcdb5256ac62a5e4196b398952dd",
+          "69d52c0351cc7142fe7bb526794c006f7dc20f492c5511ebb2411f8e72444779"
+        ],
+        "referrerStrategies": [
+          {
+            "referrerPath": "core/html-generator.ts",
+            "strategy": {
+              "kind": "relative",
+              "moduleSpecifier": "./types/core.js"
+            }
+          },
+          {
+            "referrerPath": "core/parser.ts",
+            "strategy": {
+              "kind": "relative",
+              "moduleSpecifier": "./types/core.js"
+            }
+          },
+          {
+            "referrerPath": "core/prompt-builder.ts",
+            "strategy": {
+              "kind": "relative",
+              "moduleSpecifier": "./types/core.js"
+            }
+          }
+        ]
+      },
+      "sourceFingerprint": "b4dfafdc5921038e67700cb4cc9649203f7f0c3c37e89ee9dea0693029a0401c",
+      "status": "ignore"
+    },
+    {
+      "candidate": {
+        "id": "7aa3275e412d",
+        "declarationKey": "8625c4cc20f4020562bd54b13d9d23857af68d685dbf3d664a437597e9b1095a",
+        "stableKey": "core/nodes.ts#ProgramNode#interface",
+        "declarationStableKey": "core/nodes.ts#interface#ProgramNode#0",
+        "symbolName": "ProgramNode",
+        "kind": "interface",
+        "sourcePath": "core/nodes.ts",
+        "destinationPath": "core/types/core.ts",
+        "referrerPaths": [
+          "core/html-generator.ts",
+          "core/parser.ts",
+          "core/prompt-builder.ts"
+        ],
+        "referrerCount": 3,
+        "localDependencyNames": [
+          "ActionDeclarationNode",
+          "LiteralNode",
+          "OptionValueNode",
+          "FeatureDeclarationNode",
+          "ArrayLiteralNode",
+          "OptionDeclarationNode",
+          "PromptTextNode"
+        ],
+        "localDependencyDeclarationKeys": [
+          "16e11f236596131b462566f58f00bdd833168c0b6990ed853042a8c2b530ba41",
+          "326e214a8e6d4b1cb2436b1a4aa03e0615dddcdb5256ac62a5e4196b398952dd",
+          "46776e4ff7d44ffa2e78cc5185fdb053f1a5663fe63e0474bb148edc38abcaa5",
+          "6450bbc81912de999c4bd12f6470b8756beb0977369c4540c04d78bba5d6764b",
+          "69d52c0351cc7142fe7bb526794c006f7dc20f492c5511ebb2411f8e72444779",
+          "b01cbde4f6b28eaca59462e9f56207e68c54b1ceb722d502f9ca5a104b3cc6bf",
+          "dff4c4decb0f420244ffb725ddbf078ddbc1272fc784356e9509fbdd6fe5f8d6"
+        ],
+        "referrerStrategies": [
+          {
+            "referrerPath": "core/html-generator.ts",
+            "strategy": {
+              "kind": "relative",
+              "moduleSpecifier": "./types/core.js"
+            }
+          },
+          {
+            "referrerPath": "core/parser.ts",
+            "strategy": {
+              "kind": "relative",
+              "moduleSpecifier": "./types/core.js"
+            }
+          },
+          {
+            "referrerPath": "core/prompt-builder.ts",
+            "strategy": {
+              "kind": "relative",
+              "moduleSpecifier": "./types/core.js"
+            }
+          }
+        ]
+      },
+      "sourceFingerprint": "f4cec340ff8fb9303a2b244270ed805670556d5499fa64f5812d3fe7e1c795e1",
+      "status": "ignore"
+    }
+  ]
+}

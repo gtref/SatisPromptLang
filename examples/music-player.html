@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Music Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --primary: #4a90e2;
+    --bg: #f5f7fa;
+    --text: #333;
+    --control-size: 2.5rem;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  #playlist {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+  }
+  #playlist ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  #playlist li {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+  }
+  #playlist li:hover,
+  #playlist li.active {
+    background: #e6f2ff;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    padding: 0.75rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+  }
+  .controls button {
+    background: none;
+    border: none;
+    width: var(--control-size);
+    height: var(--control-size);
+    font-size: 1.5rem;
+    color: var(--primary);
+    cursor: pointer;
+  }
+  .controls button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  .controls button[aria-pressed="true"] {
+    color: #d9534f;
+  }
+  .seek-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .seek-bar input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    outline: none;
+  }
+  .seek-bar input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .volume {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .volume input[type="range"] {
+    width: 100px;
+    -webkit-appearance: none;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    outline: none;
+  }
+  .volume input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  #currentTrack {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @media (max-width: 600px) {
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .volume input[type="range"] { width: 100%; }
+    .seek-bar input[type="range"] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>My Music Player</h1>
+</header>
+
+<main>
+  <section id="library">
+    <label for="fileInput" class="sr-only">Add tracks</label>
+    <input type="file" id="fileInput" accept=".mp3,.aac,.wav,audio/*" multiple aria-label="Add tracks to playlist">
+    <button id="clearBtn" type="button">Clear Playlist</button>
+  </section>
+
+  <section id="playlist" aria-label="Playlist">
+    <ul id="trackList"></ul>
+  </section>
+
+  <section class="controls" aria-label="Playback controls">
+    <button id="prevBtn" aria-label="Previous track" title="Previous (←)">&laquo;</button>
+    <button id="playPauseBtn" aria-label="Play" title="Play/Pause (Space)">&#9658;</button>
+    <button id="nextBtn" aria-label="Next track" title="Next (→)">&raquo;</button>
+    <button id="shuffleBtn" aria-pressed="false" aria-label="Shuffle off" title="Shuffle">🔀</button>
+
+    <div class="seek-bar">
+      <span id="currentTime">0:00</span>
+      <input type="range" id="seekBar" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+      <span id="duration">0:00</span>
+    </div>
+
+    <div class="volume">
+      <label for="volumeBar" class="sr-only">Volume</label>
+      <input type="range" id="volumeBar" min="0" max="1" step="0.01" aria-label="Volume" value="0.8">
+    </div>
+  </section>
+
+  <div id="nowPlaying" aria-live="polite">
+    <span id="currentTrack">No track selected</span>
+  </div>
+</main>
+
+<script>
+(() => {
+  // Configuration (from spec)
+  const CONFIG = {
+    autoplay: false,
+    initialVolume: 0.8,
+    repeat: "none", // possible values: none, all, one (future)
+    shuffle: false,
+    supportedFormats: ["mp3","aac","wav"]
+  };
+
+  // State
+  const state = {
+    tracks: [],            // {name, file, url}
+    order: [],             // array of indices (shuffled or original)
+    currentIndex: -1,
+    isPlaying: false,
+    shuffle: CONFIG.shuffle,
+    repeat: CONFIG.repeat
+  };
+
+  // DOM Elements
+  const fileInput = document.getElementById('fileInput');
+  const clearBtn = document.getElementById('clearBtn');
+  const trackListEl = document.getElementById('trackList');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const seekBar = document.getElementById('seekBar');
+  const currentTimeEl = document.getElementById('currentTime');
+  const durationEl = document.getElementById('duration');
+  const volumeBar = document.getElementById('volumeBar');
+  const currentTrackEl = document.getElementById('currentTrack');
+  const nowPlayingEl = document.getElementById('nowPlaying');
+
+  // Audio element
+  const audio = new Audio();
+  audio.volume = CONFIG.initialVolume;
+  volumeBar.value = CONFIG.initialVolume;
+
+  // Helpers
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2,'0')}`;
+  }
+
+  function updatePlaylistUI() {
+    trackListEl.innerHTML = '';
+    state.order.forEach((trackIdx, uiIdx) => {
+      const track = state.tracks[trackIdx];
+      const li = document.createElement('li');
+      li.textContent = track.name;
+      li.tabIndex = 0;
+      li.setAttribute('role', 'button');
+      li.setAttribute('aria-label', `Play ${track.name}`);
+      if (uiIdx === state.currentIndex) li.classList.add('active');
+      li.addEventListener('click', () => loadAndPlay(uiIdx));
+      li.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          loadAndPlay(uiIdx);
+        }
+      });
+      trackListEl.appendChild(li);
+    });
+  }
+
+  function loadAndPlay(uiIdx) {
+    if (uiIdx < 0 || uiIdx >= state.order.length) return;
+    const trackIdx = state.order[uiIdx];
+    const track = state.tracks[trackIdx];
+    if (!track) return;
+    if (audio.src !== track.url) {
+      audio.src = track.url;
+    }
+    state.currentIndex = uiIdx;
+    audio.play();
+    state.isPlaying = true;
+    updatePlayPauseButton();
+    updateNowPlaying();
+    updatePlaylistUI();
+  }
+
+  function updateNowPlaying() {
+    if (state.currentIndex === -1) {
+      currentTrackEl.textContent = 'No track selected';
+    } else {
+      const trackIdx = state.order[state.currentIndex];
+      currentTrackEl.textContent = state.tracks[trackIdx].name;
+    }
+  }
+
+  function updatePlayPauseButton() {
+    if (state.isPlaying) {
+      playPauseBtn.innerHTML = '&#10074;&#10074;'; // pause symbol
+      playPauseBtn.setAttribute('aria-label', 'Pause');
+    } else {
+      playPauseBtn.innerHTML = '&#9658;'; // play symbol
+      playPauseBtn.setAttribute('aria-label', 'Play');
+    }
+  }
+
+  function playPauseToggle() {
+    if (state.isPlaying) {
+      audio.pause();
+    } else {
+      if (state.currentIndex === -1 && state.order.length) {
+        loadAndPlay(0);
+        return;
+      }
+      audio.play();
+    }
+    state.isPlaying = !state.isPlaying;
+    updatePlayPauseButton();
+  }
+
+  function nextTrack() {
+    if (!state.order.length) return;
+    let nextIdx = state.currentIndex + 1;
+    if (nextIdx >= state.order.length) {
+      if (state.repeat === 'all') {
+        nextIdx = 0;
+      } else {
+        // stop at end
+        audio.pause();
+        state.isPlaying = false;
+        updatePlayPauseButton();
+        return;
+      }
+    }
+    loadAndPlay(nextIdx);
+  }
+
+  function prevTrack() {
+    if (!state.order.length) return;
+    let prevIdx = state.currentIndex - 1;
+    if (prevIdx < 0) {
+      if (state.repeat === 'all') {
+        prevIdx = state.order.length - 1;
+      } else {
+        // at start, restart current
+        audio.currentTime = 0;
+        return;
+      }
+    }
+    loadAndPlay(prevIdx);
+  }
+
+  function toggleShuffle() {
+    state.shuffle = !state.shuffle;
+    shuffleBtn.setAttribute('aria-pressed', state.shuffle);
+    shuffleBtn.setAttribute('aria-label', state.shuffle ? 'Shuffle on' : 'Shuffle off');
+    shuffleBtn.title = state.shuffle ? 'Shuffle On' : 'Shuffle Off';
+    // rebuild order
+    const indices = state.tracks.map((_, i) => i);
+    if (state.shuffle) {
+      // Fisher–Yates shuffle
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+    }
+    state.order = indices;
+    // reset currentIndex to match currently playing track if any
+    if (state.currentIndex !== -1) {
+      const currentTrackIdx = state.tracks.findIndex(t => t.url === audio.src);
+      state.currentIndex = state.order.findIndex(idx => idx === currentTrackIdx);
+    }
+    updatePlaylistUI();
+  }
+
+  // Event listeners
+  fileInput.addEventListener('change', e => {
+    const files = Array.from(e.target.files);
+    const newTracks = files.filter(f => {
+      const ext = f.name.split('.').pop().toLowerCase();
+      return CONFIG.supportedFormats.includes(ext);
+    }).map(f => ({
+      name: f.name,
+      file: f,
+      url: URL.createObjectURL(f)
+    }));
+    if (newTracks.length) {
+      state.tracks.push(...newTracks);
+      // rebuild order preserving shuffle state
+      const base = state.tracks.map((_, i) => i);
+      state.order = state.shuffle ? shuffleArray(base) : base;
+      updatePlaylistUI();
+      if (!state.isPlaying && CONFIG.autoplay) {
+        loadAndPlay(0);
+      }
+    }
+    // Reset input so same file can be added again if desired
+    e.target.value = '';
+  });
+
+  clearBtn.addEventListener('click', () => {
+    // Revoke object URLs
+    state.tracks.forEach(t => URL.revokeObjectURL(t.url));
+    state.tracks = [];
+    state.order = [];
+    state.currentIndex = -1;
+    audio.pause();
+    audio.src = '';
+    state.isPlaying = false;
+    updatePlayPauseButton();
+    updateNowPlaying();
+    updatePlaylistUI();
+  });
+
+  playPauseBtn.addEventListener('click', playPauseToggle);
+  prevBtn.addEventListener('click', prevTrack);
+  nextBtn.addEventListener('click', nextTrack);
+  shuffleBtn.addEventListener('click', toggleShuffle);
+
+  // Seek handling
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration) {
+      const percent = (audio.currentTime / audio.duration) * 100;
+      seekBar.value = percent;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationEl.textContent = formatTime(audio.duration);
+    }
+  });
+
+  seekBar.addEventListener('input', e => {
+    if (audio.duration) {
+      const seekTo = (e.target.value / 100) * audio.duration;
+      audio.currentTime = seekTo;
+    }
+  });
+
+  // Volume handling
+  volumeBar.addEventListener('input', e => {
+    audio.volume = parseFloat(e.target.value);
+  });
+
+  // End of track
+  audio.addEventListener('ended', () => {
+    if (state.repeat === 'one') {
+      audio.currentTime = 0;
+      audio.play();
+    } else {
+      nextTrack();
+    }
+  });
+
+  // Keyboard shortcuts (global)
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return; // ignore when typing
+    switch (e.key) {
+      case ' ': // space
+        e.preventDefault();
+        playPauseToggle();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        nextTrack();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        prevTrack();
+        break;
+      case 's':
+      case 'S':
+        toggleShuffle();
+        break;
+    }
+  });
+
+  // Utility shuffle
+  function shuffleArray(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Initialize UI
+  updatePlayPauseButton();
+  updateNowPlaying();
+})();
+</script>
+</body>
+</html>

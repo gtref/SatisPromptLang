@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WebDev Learning Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ==== CSS Reset ==== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ==== Light / Dark Theme Variables ==== */
+:root {
+    --color-bg: #ffffff;
+    --color-fg: #222222;
+    --color-primary: #0066cc;
+    --color-muted: #555555;
+    --color-accent: #ff9800;
+    --color-success: #4caf50;
+    --color-error: #f44336;
+}
+[data-theme="dark"] {
+    --color-bg: #121212;
+    --color-fg: #e0e0e0;
+    --color-primary: #90caf9;
+    --color-muted: #bbbbbb;
+    --color-accent: #ffb74d;
+    --color-success: #81c784;
+    --color-error: #e57373;
+}
+
+/* ==== Layout ==== */
+body {
+    font-family: system-ui, sans-serif;
+    line-height: 1.6;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+header {
+    background: var(--color-primary);
+    color: #fff;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+header h1 {
+    font-size: 1.5rem;
+}
+nav {
+    display: flex;
+    gap: 1rem;
+}
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+}
+nav a:focus,
+nav a:hover {
+    text-decoration: underline;
+}
+main {
+    flex: 1;
+    padding: 1rem;
+    max-width: 960px;
+    margin: 0 auto;
+}
+section {
+    display: none;
+}
+section.active {
+    display: block;
+}
+h2 {
+    margin-top: 1rem;
+    margin-bottom: .5rem;
+    color: var(--color-primary);
+}
+p, li {
+    margin-bottom: .5rem;
+}
+ul {
+    list-style: disc inside;
+}
+button, input[type="button"] {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: .5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+button:hover,
+input[type="button"]:hover {
+    background: var(--color-accent);
+}
+button:focus,
+input[type="button"]:focus {
+    outline: 2px solid var(--color-accent);
+}
+
+/* ==== Theme Switcher ==== */
+#theme-toggle {
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    padding: .2rem .5rem;
+    color: #fff;
+}
+#theme-toggle:focus {
+    outline: 2px solid var(--color-accent);
+}
+
+/* ==== Quiz ==== */
+.quiz-question {
+    margin-bottom: 1rem;
+}
+.quiz-options label {
+    display: block;
+    margin: .2rem 0;
+}
+.quiz-result {
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+/* ==== Playground ==== */
+#playground textarea {
+    width: 100%;
+    height: 200px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    padding: .5rem;
+    border: 1px solid var(--color-muted);
+    border-radius: 4px;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    resize: vertical;
+}
+#preview {
+    width: 100%;
+    height: 300px;
+    border: 1px solid var(--color-muted);
+    border-radius: 4px;
+    margin-top: .5rem;
+}
+
+/* ==== Responsive ==== */
+@media (max-width: 600px) {
+    nav {
+        flex-direction: column;
+        gap: .5rem;
+    }
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    #theme-toggle {
+        margin-top: .5rem;
+    }
+}
+</style>
+</head>
+<body data-theme="light">
+<header>
+    <h1>WebDev Learning Hub</h1>
+    <button id="theme-toggle" aria-label="Toggle dark / light theme">🌙</button>
+    <nav aria-label="Main navigation">
+        <a href="#" data-section="about">About</a>
+        <a href="#" data-section="learn">Learn</a>
+        <a href="#" data-section="quiz">Quiz</a>
+        <a href="#" data-section="other">Other Frameworks</a>
+        <a href="#" data-section="playground">Playground</a>
+    </nav>
+</header>
+
+<main>
+    <!-- About Section -->
+    <section id="about" class="active" aria-labelledby="about-title">
+        <h2 id="about-title">The Evolution of HTML</h2>
+        <ul>
+            <li><strong>1991</strong> – HTML 1.0 released by Tim Berners-Lee.</li>
+            <li><strong>1995</strong> – HTML 2.0 standardised (forms, tables).</li>
+            <li><strong>1997</strong> – HTML 3.2 added applets, text flow.</li>
+            <li><strong>1999</strong> – HTML 4.01 introduced CSS support and better accessibility.</li>
+            <li><strong>2004</strong> – XHTML 1.0 (XML‑based HTML).</li>
+            <li><strong>2014</strong> – HTML5 became a W3C Recommendation, adding multimedia, canvas, and new semantic elements.</li>
+            <li><strong>2023‑2024</strong> – Ongoing updates (custom elements, new APIs, improved accessibility).</li>
+        </ul>
+        <p>HTML continues to evolve, making the web richer and more interactive while staying backward compatible.</p>
+    </section>
+
+    <!-- Learn Section -->
+    <section id="learn" aria-labelledby="learn-title">
+        <h2 id="learn-title">Learn HTML Basics</h2>
+        <p>HTML (HyperText Markup Language) is the foundation of every web page. Below are the core concepts you should know.</p>
+
+        <h3>1. Document Structure</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;My First Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;!-- Page content goes here --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+        <h3>2. Common Elements</h3>
+        <ul>
+            <li><code>&lt;h1&gt;…&lt;/h1&gt;</code> – Headings (h1‑h6)</li>
+            <li><code>&lt;p&gt;…&lt;/p&gt;</code> – Paragraphs</li>
+            <li><code>&lt;a href="url"&gt;…&lt;/a&gt;</code> – Links</li>
+            <li><code>&lt;img src="image.jpg" alt="description"&gt;</code> – Images</li>
+            <li><code>&lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;</code> – Lists</li>
+            <li><code>&lt;section&gt;, &lt;article&gt;, &lt;nav&gt;, &lt;header&gt;, &lt;footer&gt;</code> – Semantic containers</li>
+        </ul>
+
+        <h3>3. Forms</h3>
+        <pre><code>&lt;form action="#" method="post"&gt;
+  &lt;label for="name"&gt;Name:&lt;/label&gt;
+  &lt;input type="text" id="name" name="name"&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+
+        <p>Practice these snippets in the <a href="#" data-section="playground">Playground</a>!</p>
+    </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz" aria-labelledby="quiz-title">
+        <h2 id="quiz-title">HTML Quiz</h2>
+        <form id="quiz-form">
+            <div class="quiz-question" data-correct="2">
+                <p>1️⃣ Which element is used for the most important heading?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q0" value="1"> &lt;h1&gt;</label>
+                    <label><input type="radio" name="q0" value="2"> &lt;header&gt;</label>
+                    <label><input type="radio" name="q0" value="3"> &lt;title&gt;</label>
+                </div>
+            </div>
+            <div class="quiz-question" data-correct="3">
+                <p>2️⃣ Which attribute provides alternative text for an image?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q1" value="1"> src</label>
+                    <label><input type="radio" name="q1" value="2"> href</label>
+                    <label><input type="radio" name="q1" value="3"> alt</label>
+                </div>
+            </div>
+            <div class="quiz-question" data-correct="1">
+                <p>3️⃣ What does the <code>&lt;nav&gt;</code> element represent?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q2" value="1"> A set of navigation links</label>
+                    <label><input type="radio" name="q2" value="2"> A paragraph of text</label>
+                    <label><input type="radio" name="q2" value="3"> A form fieldset</label>
+                </div>
+            </div>
+            <button type="submit">Check Answers</button>
+            <div id="quiz-result" class="quiz-result" aria-live="polite"></div>
+        </form>
+    </section>
+
+    <!-- Other Frameworks Section -->
+    <section id="other" aria-labelledby="other-title">
+        <h2 id="other-title">Beyond HTML – Useful Front‑End Frameworks</h2>
+        <h3>JavaScript Frameworks</h3>
+        <ul>
+            <li><strong>React</strong> – Component‑based UI library by Facebook. <a href="https://reactjs.org" target="_blank" rel="noopener">reactjs.org</a></li>
+            <li><strong>Vue.js</strong> – Progressive framework with an easy learning curve. <a href="https://vuejs.org" target="_blank" rel="noopener">vuejs.org</a></li>
+            <li><strong>Angular</strong> – Full‑featured framework from Google. <a href="https://angular.io" target="_blank" rel="noopener">angular.io</a></li>
+        </ul>
+        <h3>CSS Frameworks</h3>
+        <ul>
+            <li><strong>Bootstrap</strong> – Popular responsive grid and components. <a href="https://getbootstrap.com" target="_blank" rel="noopener">getbootstrap.com</a></li>
+            <li><strong>Tailwind CSS</strong> – Utility‑first CSS framework. <a href="https://tailwindcss.com" target="_blank" rel="noopener">tailwindcss.com</a></li>
+            <li><strong>Bulma</strong> – Modern CSS framework based on Flexbox. <a href="https://bulma.io" target="_blank" rel="noopener">bulma.io</a></li>
+        </ul>
+    </section>
+
+    <!-- Playground Section -->
+    <section id="playground" aria-labelledby="playground-title">
+        <h2 id="playground-title">HTML Playground</h2>
+        <p>Write HTML in the editor below and see the live preview instantly.</p>
+        <textarea id="code-editor" aria-label="HTML editor">
+&lt;h1>Hello, World!&lt;/h1>
+&lt;p>This is a paragraph inside the playground.&lt;/p>
+        </textarea>
+        <button id="run-code">Refresh Preview</button>
+        <iframe id="preview" title="Live preview of your HTML code"></iframe>
+    </section>
+</main>
+
+<footer style="text-align:center; padding:1rem; font-size:.9rem; color:var(--color-muted);">
+    © 2024 WebDev Learning Hub
+</footer>
+
+<script>
+/* ==== Navigation ==== */
+const navLinks = document.querySelectorAll('nav a');
+const sections = document.querySelectorAll('main > section');
+
+function showSection(id) {
+    sections.forEach(sec => sec.classList.toggle('active', sec.id === id));
+    // Update URL hash without scrolling
+    history.replaceState(null, '', '#' + id);
+}
+navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = link.dataset.section;
+        showSection(target);
+        // Focus first heading for accessibility
+        const heading = document.querySelector('#' + target + ' h2');
+        if (heading) heading.focus();
+    });
+});
+/* Load section from hash on page load */
+window.addEventListener('DOMContentLoaded', () => {
+    const hash = location.hash.replace('#', '');
+    if (hash) {
+        const targetLink = document.querySelector(`nav a[data-section="${hash}"]`);
+        if (targetLink) targetLink.click();
+    }
+});
+
+/* ==== Theme Switcher ==== */
+const themeToggle = document.getElementById('theme-toggle');
+function setTheme(theme) {
+    document.body.dataset.theme = theme;
+    localStorage.setItem('theme', theme);
+    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+themeToggle.addEventListener('click', () => {
+    const newTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+});
+/* Load saved theme */
+const savedTheme = localStorage.getItem('theme') || 'light';
+setTheme(savedTheme);
+
+/* ==== Quiz Logic ==== */
+document.getElementById('quiz-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let score = 0;
+    const questions = this.querySelectorAll('.quiz-question');
+    questions.forEach((q, i) => {
+        const selected = this.querySelector(`input[name="q${i}"]:checked`);
+        const correct = q.dataset.correct;
+        if (selected && selected.value === correct) score++;
+    });
+    const resultDiv = document.getElementById('quiz-result');
+    resultDiv.textContent = `You scored ${score} out of ${questions.length}.`;
+    resultDiv.style.color = score === questions.length ? 'var(--color-success)' : 'var(--color-error)';
+});
+
+/* ==== Playground ==== */
+const editor = document.getElementById('code-editor');
+const preview = document.getElementById('preview');
+function updatePreview() {
+    const doc = preview.contentDocument || preview.contentWindow.document;
+    doc.open();
+    doc.write(editor.value);
+    doc.close();
+}
+document.getElementById('run-code').addEventListener('click', updatePreview);
+editor.addEventListener('input', () => {
+    // Debounce preview updates for smoother typing
+    clearTimeout(editor._timer);
+    editor._timer = setTimeout(updatePreview, 500);
+});
+/* Initial preview */
+updatePreview();
+</script>
+</body>
+</html>
